@@ -1,8 +1,9 @@
 {
     "manifest_version": 3,
-    "name": "Decryptor",
+    "name": "Decryptor - Hash, Base64 & JWT Decoder",
+    "short_name": "Decryptor",
     "version": "1.0.0",
-    "description": "Universal decryptor & decoder for MD5, SHA hashes, Base64, Hex, URL, JWT, Caesar/ROT13, and AES.",
+    "description": "Instant decryptor & decoder for MD5, SHA hashes, Base64, Hex, URL encoding, JWT tokens, Caesar cipher, and AES.",
     "icons": {
         "16": "icons/icon16.png",
         "48": "icons/icon48.png",
@@ -22,7 +23,7 @@
     ],
     "action": {
         "default_popup": "popup.html",
-        "default_title": "Decryptor - Decryptor & Decoder",
+        "default_title": "Decryptor",
         "default_icon": {
             "16": "icons/icon16.png",
             "48": "icons/icon48.png",
