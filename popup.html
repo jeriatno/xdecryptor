@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decryptor - Multi Decryptor & Decoder</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-brand">
+        <img src="icons/icon48.png" alt="Logo" class="logo-img" width="26" height="26">
+        <div>
+          <div class="brand-title-wrap">
+            <h1>Decryptor</h1>
+            <span class="version-tag">v1.0</span>
+          </div>
+          <span class="sub-title">MD5, Hashes & Multi-Cipher Decryptor</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="tab-auto">
+        <span class="tab-icon">⚡</span> Smart Auto
+      </button>
+      <button class="tab-btn" data-tab="tab-cracker">
+        <span class="tab-icon">🔓</span> Hash Cracker
+      </button>
+      <button class="tab-btn" data-tab="tab-ciphers">
+        <span class="tab-icon">🔄</span> Ciphers
+      </button>
+      <button class="tab-btn" data-tab="tab-jwt">
+        <span class="tab-icon">🎫</span> JWT
+      </button>
+      <button class="tab-btn" data-tab="tab-aes">
+        <span class="tab-icon">🔐</span> AES
+      </button>
+      <button class="tab-btn" data-tab="tab-generator">
+        <span class="tab-icon">#️⃣</span> Hasher
+      </button>
+    </nav>
+
+    <!-- Tab 1: Smart Auto Decrypt -->
+    <div id="tab-auto" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <label for="autoInput" class="input-label">Input Hash or Encoded String</label>
+          <div class="samples-row">
+            <span class="samples-label">Samples:</span>
+            <button class="chip-btn" data-sample="5f4dcc3b5aa765d61d8327deb882cf99" data-label="MD5">MD5 (password)</button>
+            <button class="chip-btn" data-sample="U2VsYW1hdCBEYXRhbmc=" data-label="Base64">Base64</button>
+            <button class="chip-btn" data-sample="48656c6c6f20576f726c6421" data-label="Hex">Hex</button>
+            <button class="chip-btn" data-sample="Halo%20Dunia%20%26%20Indonesia" data-label="URL">URL</button>
+          </div>
+        </div>
+
+        <div class="input-box-wrap">
+          <textarea id="autoInput" placeholder="Paste MD5 hash, Base64, Hex, URL, JWT, Binary, etc..." rows="3" spellcheck="false"></textarea>
+          <div class="detected-badge-bar" id="detectedBar" style="display: none;">
+            <span class="detect-pill" id="detectedPill">Detected: MD5</span>
+            <span class="confidence-tag" id="confidenceTag">Confidence 95%</span>
+          </div>
+        </div>
+
+        <div class="actions-toolbar">
+          <button id="autoDecryptBtn" class="btn btn-primary">
+            <span>⚡</span> Decrypt Now
+          </button>
+          <button id="autoClearBtn" class="btn btn-outline">Clear</button>
+          <button id="autoCopyBtn" class="btn btn-outline" style="margin-left: auto;">
+            <span>📋</span> Copy Output
+          </button>
+        </div>
+
+        <div class="output-box-wrap">
+          <div class="output-header">
+            <span class="output-title">Decrypted Output</span>
+            <span id="autoMetaInfo" class="meta-info"></span>
+          </div>
+          <div id="autoOutput" class="output-display selectable" tabindex="0">Hasil dekripsi akan muncul di sini...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Hash Cracker (MD5, SHA1, SHA256, SHA512) -->
+    <div id="tab-cracker" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <label for="hashInput" class="input-label">Target Cryptographic Hash</label>
+          <div class="samples-row">
+            <span class="samples-label">Test Hashes:</span>
+            <button class="chip-btn" data-sample="21232f297a57a5a743894a0e4a801fc3" data-target="hashInput">admin (MD5)</button>
+            <button class="chip-btn" data-sample="88d4266fd4e6338d13b845fcf289579d209c89782f19293a414ec4be4c65ac45" data-target="hashInput">password (SHA256)</button>
+          </div>
+        </div>
+
+        <div class="input-box-wrap">
+          <textarea id="hashInput" placeholder="Enter MD5 (32-char), SHA-1 (40-char), or SHA-256 (64-char)..." rows="3" spellcheck="false"></textarea>
+        </div>
+
+        <div class="cracker-options-row">
+          <div class="checkbox-wrap">
+            <input type="checkbox" id="checkOnlineFallback" checked>
+            <label for="checkOnlineFallback">Use Online DB fallback if offline lookup misses</label>
+          </div>
+        </div>
+
+        <div class="actions-toolbar">
+          <button id="crackBtn" class="btn btn-primary">
+            <span>🔓</span> Start Crack
+          </button>
+          <button id="clearHashBtn" class="btn btn-outline">Clear</button>
+          <button id="copyCrackedBtn" class="btn btn-outline" style="margin-left: auto;">
+            <span>📋</span> Copy
+          </button>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div id="crackProgressBar" class="progress-bar-wrap" style="display: none;">
+          <div class="progress-track">
+            <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+          </div>
+          <div class="progress-label-wrap">
+            <span id="progressText">Searching dictionary...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+
+        <div class="output-box-wrap">
+          <div class="output-header">
+            <span class="output-title">Cracked Plaintext</span>
+            <span id="crackMetaInfo" class="meta-info"></span>
+          </div>
+          <div id="crackOutput" class="output-display selectable" tabindex="0">Waiting for hash...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Multi-Ciphers & Decoders -->
+    <div id="tab-ciphers" class="tab-content">
+      <div class="card">
+        <div class="cipher-select-bar">
+          <div class="select-group">
+            <label for="cipherType" class="field-label">Format / Algorithm:</label>
+            <select id="cipherType" class="custom-select">
+              <option value="base64">Base64 / Base64URL</option>
+              <option value="hex">Hexadecimal (ASCII)</option>
+              <option value="url">URL / Percent Encoding</option>
+              <option value="html">HTML Entities</option>
+              <option value="binary">Binary (8-bit)</option>
+              <option value="caesar">Caesar / ROT13 Cipher</option>
+              <option value="atbash">Atbash Cipher</option>
+              <option value="morse">Morse Code</option>
+            </select>
+          </div>
+
+          <div class="mode-switch">
+            <button id="modeDecode" class="mode-btn active">Decode</button>
+            <button id="modeEncode" class="mode-btn">Encode</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Option: Caesar Shift Slider -->
+        <div id="caesarOptionRow" class="option-row" style="display: none;">
+          <label for="caesarShift">Caesar Shift: <span id="shiftValue">13</span> (ROT13)</label>
+          <input type="range" id="caesarShift" min="1" max="25" value="13" class="slider">
+        </div>
+
+        <div class="input-box-wrap">
+          <textarea id="cipherInput" placeholder="Input text here..." rows="3" spellcheck="false"></textarea>
+        </div>
+
+        <div class="actions-toolbar">
+          <button id="cipherProcessBtn" class="btn btn-primary">
+            <span id="cipherActionIcon">🔄</span> <span id="cipherActionText">Decode</span>
+          </button>
+          <button id="cipherSwapBtn" class="btn btn-secondary" title="Swap input and output">
+            <span>⇄</span> Swap
+          </button>
+          <button id="cipherClearBtn" class="btn btn-outline">Clear</button>
+          <button id="cipherCopyBtn" class="btn btn-outline" style="margin-left: auto;">
+            <span>📋</span> Copy
+          </button>
+        </div>
+
+        <div class="output-box-wrap">
+          <div class="output-header">
+            <span class="output-title">Result</span>
+          </div>
+          <div id="cipherOutput" class="output-display selectable" tabindex="0">...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: JWT Inspector -->
+    <div id="tab-jwt" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <label for="jwtInput" class="input-label">JWT Token (header.payload.signature)</label>
+          <button class="chip-btn" id="sampleJwtBtn">Try Sample JWT</button>
+        </div>
+
+        <div class="input-box-wrap">
+          <textarea id="jwtInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." rows="3" spellcheck="false"></textarea>
+        </div>
+
+        <div class="actions-toolbar">
+          <button id="jwtDecodeBtn" class="btn btn-primary">
+            <span>🎫</span> Parse & Inspect
+          </button>
+          <button id="jwtClearBtn" class="btn btn-outline">Clear</button>
+          <button id="jwtCopyPayloadBtn" class="btn btn-outline" style="margin-left: auto;">
+            <span>📋</span> Copy Payload
+          </button>
+        </div>
+
+        <!-- JWT Breakdown -->
+        <div id="jwtResultsArea" style="display: none; margin-top: 8px;">
+          <div class="jwt-status-bar">
+            <span id="jwtStatusBadge" class="jwt-pill">Active</span>
+            <span id="jwtTimeInfo" class="jwt-time"></span>
+            <span id="jwtAlgBadge" class="jwt-pill alg">HS256</span>
+          </div>
+
+          <div class="jwt-parts-container">
+            <div class="jwt-part-box">
+              <div class="jwt-part-title red">Header</div>
+              <pre id="jwtHeaderDisplay" class="jwt-code"></pre>
+            </div>
+            <div class="jwt-part-box">
+              <div class="jwt-part-title purple">Payload (Claims)</div>
+              <pre id="jwtPayloadDisplay" class="jwt-code"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: AES Symmetric Crypto -->
+    <div id="tab-aes" class="tab-content">
+      <div class="card">
+        <div class="aes-control-bar">
+          <div class="field-wrap full">
+            <label for="aesKey" class="field-label">Secret Key / Passphrase:</label>
+            <input type="password" id="aesKey" placeholder="Enter encryption key or passphrase..." class="text-input">
+          </div>
+          <div class="mode-switch">
+            <button id="aesModeDecrypt" class="mode-btn active">Decrypt</button>
+            <button id="aesModeEncrypt" class="mode-btn">Encrypt</button>
+          </div>
+        </div>
+
+        <div class="input-box-wrap" style="margin-top: 8px;">
+          <textarea id="aesInput" placeholder="Paste Base64 AES ciphertext (or plain text if encrypting)..." rows="3" spellcheck="false"></textarea>
+        </div>
+
+        <div class="actions-toolbar">
+          <button id="aesProcessBtn" class="btn btn-primary">
+            <span id="aesActionIcon">🔓</span> <span id="aesActionText">Decrypt</span>
+          </button>
+          <button id="aesClearBtn" class="btn btn-outline">Clear</button>
+          <button id="aesCopyBtn" class="btn btn-outline" style="margin-left: auto;">
+            <span>📋</span> Copy
+          </button>
+        </div>
+
+        <div class="output-box-wrap">
+          <div class="output-header">
+            <span class="output-title">AES Output</span>
+          </div>
+          <div id="aesOutput" class="output-display selectable" tabindex="0">Waiting for input...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 6: Hash Generator -->
+    <div id="tab-generator" class="tab-content">
+      <div class="card">
+        <label for="genInput" class="input-label">Plaintext Input to Hash:</label>
+        <div class="input-box-wrap">
+          <textarea id="genInput" placeholder="Type text to generate MD5, SHA-1, SHA-256, SHA-512 hashes instantly..." rows="2" spellcheck="false"></textarea>
+        </div>
+
+        <div class="hash-list-container">
+          <div class="hash-item">
+            <div class="hash-header">
+              <span class="hash-name">MD5 (128-bit)</span>
+              <button class="copy-small-btn" data-copy-id="genMd5">Copy</button>
+            </div>
+            <div id="genMd5" class="hash-val">-</div>
+          </div>
+
+          <div class="hash-item">
+            <div class="hash-header">
+              <span class="hash-name">SHA-1 (160-bit)</span>
+              <button class="copy-small-btn" data-copy-id="genSha1">Copy</button>
+            </div>
+            <div id="genSha1" class="hash-val">-</div>
+          </div>
+
+          <div class="hash-item">
+            <div class="hash-header">
+              <span class="hash-name">SHA-256 (256-bit)</span>
+              <button class="copy-small-btn" data-copy-id="genSha256">Copy</button>
+            </div>
+            <div id="genSha256" class="hash-val">-</div>
+          </div>
+
+          <div class="hash-item">
+            <div class="hash-header">
+              <span class="hash-name">SHA-512 (512-bit)</span>
+              <button class="copy-small-btn" data-copy-id="genSha512">Copy</button>
+            </div>
+            <div id="genSha512" class="hash-val">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Notification Bar -->
+    <footer class="app-footer">
+      <div id="statusBox" class="status-box status-idle">
+        <span id="statusIndicator" class="status-dot"></span>
+        <span id="statusMsg">Ready. Paste any hash or cipher to begin.</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="dictionary.js"></script>
+  <script src="crypto-engine.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

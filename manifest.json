@@ -1,0 +1,49 @@
+{
+    "manifest_version": 3,
+    "name": "Decryptor",
+    "version": "1.0.0",
+    "description": "Universal decryptor & decoder for MD5, SHA hashes, Base64, Hex, URL, JWT, Caesar/ROT13, and AES.",
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "permissions": [
+        "contextMenus",
+        "storage",
+        "activeTab",
+        "scripting",
+        "clipboardWrite"
+    ],
+    "host_permissions": [
+        "https://www.nitrxgen.net/*",
+        "https://*.gromweb.com/*",
+        "<all_urls>"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Decryptor - Decryptor & Decoder",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "content.css"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}
